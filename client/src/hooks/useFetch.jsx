@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { notificationActions } from "../store/notificationSlice";
 
+// Add this at the top
+const API_BASE_URL = process.env.REACT_APP_API_URL || "";
+
 const useFetch = ({ method, url }, successFn, errorFn) => {
   const [requestState, setRequestState] = useState();
   const dispatch = useDispatch();
@@ -21,12 +24,21 @@ const useFetch = ({ method, url }, successFn, errorFn) => {
 
     try {
       setRequestState("loading");
-      const response = await fetch(`/api${url}`, fetchOptions);
+      
+      // FIX THIS LINE - Add base URL
+      const fullUrl = `${API_BASE_URL}/api${url}`;
+      const response = await fetch(fullUrl, {
+        ...fetchOptions,
+        credentials: 'include', // ADD THIS for cookies
+      });
+      
       let data;
       if (methodUpper !== "DELETE") {
         data = await response.json();
       }
-      if (!response.ok) throw new Error(data.message);
+      
+      if (!response.ok) throw new Error(data?.message || `HTTP ${response.status}`);
+      
       setRequestState("success");
       successFn && successFn(data);
       return data;

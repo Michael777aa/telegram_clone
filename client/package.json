@@ -1,6 +1,5 @@
 {
   "name": "client",
-  "proxy": "https://telegram-server-1-o8qe.onrender.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
