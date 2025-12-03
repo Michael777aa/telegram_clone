@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { notificationActions } from "../store/notificationSlice";
 
-// Add this at the top
+// Use environment variable instead of hardcoding
+const API_BASE_URL = "https://telegram-server-1-o8qe.onrender.com";
 
 const useFetch = ({ method, url }, successFn, errorFn) => {
   const [requestState, setRequestState] = useState();
@@ -18,18 +19,20 @@ const useFetch = ({ method, url }, successFn, errorFn) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(values),
+            credentials: 'include', // Keep this!
           }
-        : {};
+        : {
+            credentials: 'include', // Add this for GET too
+          };
 
     try {
       setRequestState("loading");
       
-      // FIX THIS LINE - Add base URL
-      const fullUrl = `https://telegram-server-1-o8qe.onrender.com/api${url}`;
-      const response = await fetch(fullUrl, {
-        ...fetchOptions,
-        credentials: 'include', // ADD THIS for cookies
-      });
+      // Use API_BASE_URL
+      const fullUrl = `${API_BASE_URL}/api${url}`;
+      console.log("🌐 API Call:", fullUrl); // For debugging
+      
+      const response = await fetch(fullUrl, fetchOptions);
       
       let data;
       if (methodUpper !== "DELETE") {
@@ -43,6 +46,8 @@ const useFetch = ({ method, url }, successFn, errorFn) => {
       return data;
     } catch (error) {
       setRequestState("error");
+      console.error("API Error:", error.message, "URL:", url);
+      
       dispatch(
         notificationActions.addNotification({
           message: error.message,
