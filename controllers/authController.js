@@ -14,14 +14,26 @@ const assignTokenToCookie = (user, res, statusCode) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: true,
+    secure: true, // Must be true for HTTPS
+    sameSite: 'none', // ✅ REQUIRED for cross-site
     expires: new Date(
       Date.now() + parseInt(process.env.JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
+    // Optional: Add domain if needed
+    // domain: '.onrender.com',
   };
 
   res.cookie("telegramToken", token, cookieOptions);
-  res.cookie("userId", user._id);
+  
+  // ✅ FIXED: Add same options for userId cookie
+  res.cookie("userId", user._id.toString(), {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none', // ✅ CRITICAL
+    expires: new Date(
+      Date.now() + parseInt(process.env.JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
+    ),
+  });
 
   user.password = undefined;
 
