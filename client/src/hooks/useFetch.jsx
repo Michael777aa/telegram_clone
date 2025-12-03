@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { notificationActions } from "../store/notificationSlice";
 
 // Add this at the top
-const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
 const useFetch = ({ method, url }, successFn, errorFn) => {
   const [requestState, setRequestState] = useState();
@@ -26,7 +25,7 @@ const useFetch = ({ method, url }, successFn, errorFn) => {
       setRequestState("loading");
       
       // FIX THIS LINE - Add base URL
-      const fullUrl = `${API_BASE_URL}/api${url}`;
+      const fullUrl = `https://telegram-server-1-o8qe.onrender.com/api${url}`;
       const response = await fetch(fullUrl, {
         ...fetchOptions,
         credentials: 'include', // ADD THIS for cookies
